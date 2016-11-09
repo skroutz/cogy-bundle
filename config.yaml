@@ -14,15 +14,15 @@ long_description: |
 
   Currently it's only ships as a native bundle but we may release a Docker
   version in the future.
-version: "0.0.2"
+version: "0.0.3"
 config:
   notes: This bundle expects the following environment variables to be set
   env:
     - var: COGY_ENDPOINT
       description: "Used by the cogy executable and is the Cogy engine endpoint
-        served by your Rails application.For example if you mounted the Cogy
+        served by your Rails application. For example if you mounted the Cogy
         engine by doing `mount Cogy::Engine, at: 'cogy'`, then `COGY_ENDPOINT`
-        should be set to 'http://your-site.com/cogy'".
+        should be set to 'http://your-site.com/cogy'"
 commands:
   cogy:
     executable: "/srv/cogcmd/cogy/commands/cogy"
