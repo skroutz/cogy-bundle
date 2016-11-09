@@ -2,7 +2,7 @@
 cog_bundle_version: 4
 
 name: cogy
-description: Native bundle with auxiliary Cogy utilities
+description: Auxiliary Cogy utilities. This is a native bundle.
 long_description: |
   This bundles does two things
 

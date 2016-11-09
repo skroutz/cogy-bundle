@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+#
+# This is the executable that all Cogy-defined commands end up invoking.
+#
+# See http://github.com/skroutz/cogy for more.
+raise "COGY_ENDPOINT environment variable is not set" if ENV["COGY_ENDPOINT"].nil
+
+require "net/http"
+
+endpoint = ENV["COGY_ENDPOINT"].sub(/\/\z/,'')
+uri = URI("#{endpoint}/cmd/#{ENV['COG_COMMAND']}/#{ENV['COG_CHAT_HANDLE']}")
+
+req_params = {}
+
+ENV.select { |k,_| k =~ /\ACOG_(ARGV_\d+|OPT_.+)\z/ }.each do |k,v|
+  req_params[k.downcase] = v
+end
+
+uri.query = URI.encode_www_form(req_params)
+res = Net::HTTP.get_response(uri)
+
+puts res.body

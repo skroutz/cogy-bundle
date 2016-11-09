@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+#
+# This script receives a URL as the argument and expects it to return a valid
+# bundle config YAML. It then installs that bundle, enables it and assigns it
+# to the first relay group.
+#
+# It expects `API_HOST`, `API_PORT`, `API_USERNAME` and `API_PASSWORD`
+# environment variables to be set. Those are used to communicate with Cog API.
+#
+# Currently it only works with single relay group installations.
+abort("Please provide the URL to install the bundle from") if !ENV["COG_ARGV_0"]
+
+require "net/http"
+require "json"
+require "yaml"
+
+# Best-effort measure for the case where the command was issued from a Rails
+# deployment (ie. Cogy) and the unicorns haven't respawned yet.
+sleep 1
+
+uri = URI(ENV["COG_ARGV_0"])
+res = nil
+
+Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+  req = Net::HTTP::Get.new(uri)
+  res = http.request(req)
+end
+
+if res.code != "200"
+  abort "Error when trying to fetch #{uri}: #{res.code} #{res.body}"
+end
+
+config = YAML.load(res.body)
+
+api_host, api_port = ENV.values_at('API_HOST', 'API_PORT')
+username, password = ENV.values_at('API_USERNAME', 'API_PASSWORD')
+
+cog_url = "http://#{api_host}:#{api_port}/v1"
+uri = URI("#{cog_url}/token")
+res = Net::HTTP.post_form(uri, "username" => username, "password" => password)
+
+if res.code != "201"
+  abort "Error while authenticating with Cog API: #{res.code} #{res.body}"
+end
+
+token = JSON.parse(res.body)["token"]["value"]
+
+uri = URI("#{cog_url}/bundles")
+
+Net::HTTP.start(uri.host, uri.port) do |http|
+  # install the bundle
+  req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
+  req["Authorization"] = "token #{token}"
+	req.body = { "bundle" => { "config" => config }}.to_json
+  res = http.request(req)
+
+  if res.code != "201"
+    begin
+      abort "Error installing bundle: #{res.code} #{JSON.parse(res.body)["errors"].join(" ")}"
+    rescue => e
+      # TODO: temp. solution until we're familiar with everything Cog might
+      # return as an error
+      abort "Unhandled error: #{res.code} #{e}"
+    end
+  end
+
+  parsed_res = JSON.parse(res.body)
+  bundle_version_id = parsed_res["bundle_version"]["id"]
+  bundle_id = parsed_res["bundle_version"]["bundle_id"]
+
+  # fetch relay_group ID
+  uri = URI("#{cog_url}/relay_groups")
+  req = Net::HTTP::Get.new(uri)
+  req["Authorization"] = "token #{token}"
+  res = http.request(req)
+  # TODO: update when we add more than 1 relay groups
+  relay_group_id = JSON.parse(res.body)["relay_groups"].first["id"]
+
+  # assign bundle to relay group
+  uri = URI("#{cog_url}/relay_groups/#{relay_group_id}/bundles")
+  req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
+  req["Authorization"] = "token #{token}"
+  req.body = { "bundles" => { "add" => [bundle_id] }, "id" => relay_group_id }.to_json
+  res = http.request(req)
+  if res.code != "200"
+    abort "Error assigning bundle to relay group #{res.code} #{res.body}"
+  end
+
+  # enable bundle version
+  uri = URI("#{cog_url}/bundles/#{bundle_id}/versions/#{bundle_version_id}/status")
+  req = Net::HTTP::Post.new(uri)
+  req["Authorization"] = "token #{token}"
+  req.set_form_data("status" => "enabled")
+  res = http.request(req)
+  if res.code != "200"
+    abort "Error while trying to enable bundle version #{res.code}: #{res.body}"
+  end
+end
+
+puts "Successfully installed #{config["name"]} #{config["version"]}! " \
+     "It might take a second before it's available."
