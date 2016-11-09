@@ -3,7 +3,7 @@
 # This is the executable that all Cogy-defined commands end up invoking.
 #
 # See http://github.com/skroutz/cogy for more.
-raise "COGY_ENDPOINT environment variable is not set" if ENV["COGY_ENDPOINT"].nil
+abort("COGY_ENDPOINT environment variable is not set") if !ENV["COGY_ENDPOINT"]
 
 require "net/http"
 
