@@ -3,11 +3,11 @@
 # This is the executable that all Cogy-defined commands end up invoking.
 #
 # See http://github.com/skroutz/cogy for more.
-abort("COGY_ENDPOINT environment variable is not set") if !ENV["COGY_ENDPOINT"]
+abort("COGY_BACKEND environment variable is not set") if !ENV["COGY_BACKEND"]
 
 require "net/http"
 
-endpoint = ENV["COGY_ENDPOINT"].sub(/\/\z/,'')
+endpoint = ENV["COGY_BACKEND"].sub(/\/\z/,'')
 uri = URI("#{endpoint}/cmd/#{ENV['COG_COMMAND']}/#{ENV['COG_CHAT_HANDLE']}")
 
 req_params = {}

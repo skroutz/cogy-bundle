@@ -18,11 +18,11 @@ version: "0.0.4"
 config:
   notes: This bundle expects the following environment variables to be set
   env:
-    - var: COGY_ENDPOINT
-      description: "Used by the cogy and install commands and is the Cogy engine
-        endpoint served by your Rails application. For example if you mounted
-        the Cogy engine by doing `mount Cogy::Engine, at: 'cogy'`, then `COGY_ENDPOINT`
-        should be set to 'http://your-site.com/cogy'"
+    - var: COGY_BACKEND
+      description: "Used by the cogy command and is the Cogy engine endpoint
+        served by your Rails application. For example if you mounted
+        the Cogy engine by doing `mount Cogy::Engine, at: 'cogy'`, then
+        `COGY_BACKEND should be set to 'http://your-site.com/cogy'"
 commands:
   cogy:
     executable: "/srv/cogcmd/cogy/commands/cogy"
@@ -36,7 +36,7 @@ commands:
 
 
       What this script does is simply making a request to the Cogy endpoint
-      in your Rails application, defined by `COGY_ENDPOINT` env. variable and
+      in your Rails application, defined by `COGY_BACKEND` env. variable and
       return the results.
 
 
