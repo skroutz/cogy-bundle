@@ -38,6 +38,10 @@ commands:
       What this script does is simply making a request to the Cogy endpoint
       in your Rails application, defined by `COGY_ENDPOINT` env. variable and
       return the results.
+
+
+      All environment variables starting with 'COGY_' are also passed to the
+      backend.
     rules:
       - "allow"
   install:

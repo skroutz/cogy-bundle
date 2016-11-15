@@ -12,7 +12,7 @@ uri = URI("#{endpoint}/cmd/#{ENV['COG_COMMAND']}/#{ENV['COG_CHAT_HANDLE']}")
 
 req_params = {}
 
-ENV.select { |k,_| k =~ /\ACOG_(ARGV_\d+|OPT_.+)\z/ }.each do |k,v|
+ENV.select { |k,_| k =~/\A(COG_(ARGV_\d+|OPT_.+)|COGY_.+)\z/ }.each do |k,v|
   req_params[k.downcase] = v
 end
 
