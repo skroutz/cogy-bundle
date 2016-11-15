@@ -46,17 +46,22 @@ commands:
       - "allow"
   install:
     executable: "/srv/cogcmd/cogy/commands/install"
-    description: Installs your Rails application Cogy-generated bundle.
+    description: Install a bundle config from a remote location
     long_description: |
       This command was created so that we could easily install the bundle, given
-      a bundle config that's generated from Cogy (ie. Cogy inventory endpoint)
+      a bundle config that was generated from Cogy (ie. the inventory endpoint)
       and served by the Rails application.
 
-      It is typically used in conjuction with a Cog Trigger so that installing a
-      new bundle is automatically hooked in your deployment process.
-
-      Uses `COGY_ENDPOINT` environment variable to fetch the config from.
-    examples: "cogy:install"
+      It accepts a --url option that should point to the path that the Cogy
+      engine is mounted in your app, and is typically used in conjuction with a
+      Cog Trigger so that installing a new bundle is automatically hooked in
+      your deployment process.
+    examples: "cogy:install --url 'http://myapp.com/cogy'"
+    options:
+      url:
+        type: string
+        required: true
+        description: The URL where the Cogy engine is mounted
     rules:
       - "allow"
 

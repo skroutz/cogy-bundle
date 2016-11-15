@@ -1,16 +1,18 @@
 #!/usr/bin/env ruby
 #
-# This script installs the Cogy-generated bundle from Cogy's inventory endpoint,
-# as pointed to by the `COGY_ENDPOINT` environment variable, which must be set.
+# This script installs the Cogy-generated bundle from by using Cogy's inventory
+# endpoint. The required `--url` option should point to where the Cogy engine
+# is mounted in your app.
+#
 # It then enables the bundle and assigns it to the first relay group that it
 # finds.
 #
 # Currently it only works with single relay group installations.
 #
 # This script also expects `API_HOST`, `API_PORT`, `API_USERNAME` and
-# `API_PASSWORD` # environment variables to be set. Those are used to
+# `API_PASSWORD` environment variables to be set. Those are used to
 # communicate with Cog API.
-abort("COGY_ENDPOINT environment variable is not set") if !ENV["COGY_ENDPOINT"]
+abort("The --url option must be provided") if !ENV["COG_OPT_URL"]
 
 require "net/http"
 require "json"
@@ -20,7 +22,7 @@ require "yaml"
 # deployment (ie. Cogy) and the unicorns haven't respawned yet.
 sleep 1
 
-endpoint = ENV["COGY_ENDPOINT"].sub(/\/\z/,'')
+endpoint = ENV["COG_OPT_URL"].sub(/\/\z/,'')
 uri = URI("#{endpoint}/inventory")
 res = nil
 
