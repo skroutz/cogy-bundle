@@ -40,8 +40,8 @@ commands:
       return the results.
 
 
-      All environment variables starting with 'COGY_' are also passed to the
-      backend.
+      All Relay environment variables are also passed to the backend as the
+      body of the request.
     rules:
       - "allow"
   install:

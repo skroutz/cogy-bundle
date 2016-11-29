@@ -9,14 +9,6 @@ require "net/http"
 
 endpoint = ENV["COGY_BACKEND"].sub(/\/\z/,'')
 uri = URI("#{endpoint}/cmd/#{ENV['COG_COMMAND']}/#{ENV['COG_CHAT_HANDLE']}")
-
-req_params = {}
-
-ENV.select { |k,_| k =~/\A(COG_(ARGV_\d+|OPT_.+)|COGY_.+)\z/ }.each do |k,v|
-  req_params[k.downcase] = v
-end
-
-uri.query = URI.encode_www_form(req_params)
-res = Net::HTTP.get_response(uri)
+res = Net::HTTP.post_form(uri, ENV)
 
 puts res.body
