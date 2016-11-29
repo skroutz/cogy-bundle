@@ -14,7 +14,7 @@ long_description: |
 
   Currently it's only ships as a native bundle but we may release a Docker
   version in the future.
-version: "0.0.5"
+version: "0.3.0"
 config:
   notes: This bundle expects the following environment variables to be set
   env:
