@@ -2,60 +2,58 @@
 cog_bundle_version: 4
 
 name: cogy
-description: Auxiliary Cogy utilities. This is a native bundle.
+description: Auxiliary Cogy utilities.
 long_description: |
-  This bundles does two things
+  This bundles is a requirement of the Cogy gem (https://github.com/skroutz/cogy)
+  and provides the following
 
-    1) contains the Cogy executable, a script that all Cogy-defined commands
-       invocations are routed to
+    1) ships the Cogy executable (ie. `commands/cogy`), a script that all
+       Cogy-defined commands invocations are routed to
     2) provides a `install` command that can install the bundle that is
        generated from Cogy from your Rails application.
 
-
-  Currently it's only ships as a native bundle but we may release a Docker
-  version in the future.
+  This bundle only ships as a native bundle but we may release a Docker
+  version in the future. This means that it is assumed you already have a
+  configuration management tool set up for provisioning native bundles.
 version: "0.3.0"
 config:
-  notes: This bundle expects the following environment variables to be set
+  notes: This bundle expects the following environment variables to be set.
   env:
     - var: COGY_BACKEND
-      description: "Used by the cogy command and is the Cogy engine endpoint
-        served by your Rails application. For example if you mounted
-        the Cogy engine by doing `mount Cogy::Engine, at: 'cogy'`, then
-        `COGY_BACKEND should be set to 'http://your-site.com/cogy'"
+      description: |
+        Used by the cogy executable and should point to the Cogy
+        engine endpoint which is served by your Rails application.
+        For example, if you mounted the Cogy engine by doing
+        `mount Cogy::Engine, at: 'cogy'`, then it should be set to http://your-site.com/cogy"
 commands:
   cogy:
     executable: "/srv/cogcmd/cogy/commands/cogy"
     description: This is the executable invoked by Cogy-defined commands
     long_description: |
       This command exists mainly as a placeholder so that the cogy script
-      is shipped in the Relays. This is the script that Cogy-defined
-      commands in your Rails application will end up invoking. So the
-      `executable` config set above should match the `executable_path` option
-      set in your Cogy configuration (see https://github.com/skroutz/cogy#configuration).
+      is shipped in the Relays. This is the script that is ultimately invoked by
+      all Cogy commands (which are defined in your Rails app).
 
+      Thus, the `executable` config set above should match the
+      `cogy_executable` option set in your Cogy configuration
+      (see https://github.com/skroutz/cogy#configuration).
 
-      What this script does is simply making a request to the Cogy endpoint
-      in your Rails application, defined by `COGY_BACKEND` env. variable and
-      return the results.
-
-
-      All Relay environment variables are also passed to the backend as the
-      body of the request.
+      This script simply makes an HTTP request to the Cogy endpoint in your
+      Rails application (as defined by the `COGY_BACKEND` environment variable)
+      and returns the response as a result.
     rules:
       - "allow"
   install:
     executable: "/srv/cogcmd/cogy/commands/install"
-    description: Install a bundle config from a remote location
+    description: Installs the Cogy-generated bundle from your Rails app
     long_description: |
-      This command was created so that we could easily install the bundle, given
-      a bundle config that was generated from Cogy (ie. the inventory endpoint)
-      and served by the Rails application.
+      Installs the Cogy-generated bundle config, which is served by your
+      Rails application (ie. the inventory endpoint).
 
-      It accepts a --url option that should point to the path that the Cogy
-      engine is mounted in your app, and is typically used in conjuction with a
-      Cog Trigger so that installing a new bundle is automatically hooked in
-      your deployment process.
+      It's meant to be invoked by a Cog Trigger so that the installation happens
+      automatically when needed.
+
+      See https://github.com/skroutz/cogy#installation-trigger
     examples: "cogy:install --url 'http://myapp.com/cogy'"
     options:
       url:
@@ -64,4 +62,3 @@ commands:
         description: The URL where the Cogy engine is mounted
     rules:
       - "allow"
-
