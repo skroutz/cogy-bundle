@@ -8,7 +8,7 @@ abort("COGY_BACKEND environment variable is not set") if !ENV["COGY_BACKEND"]
 require "net/http"
 
 endpoint = ENV["COGY_BACKEND"].sub(/\/\z/,'')
-uri = URI("#{endpoint}/cmd/#{ENV['COG_COMMAND']}/#{ENV['COG_CHAT_HANDLE']}")
+uri = URI("#{endpoint}/cmd/#{ENV['COG_COMMAND']}")
 res = Net::HTTP.post_form(uri, ENV)
 
 puts res.body
