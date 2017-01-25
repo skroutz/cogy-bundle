@@ -25,6 +25,7 @@ config:
         engine endpoint which is served by your Rails application.
         For example, if you mounted the Cogy engine by doing
         `mount Cogy::Engine, at: 'cogy'`, then it should be set to http://your-site.com/cogy"
+        If you use cogy >= 0.5.1, you can ship this variable from within Cogy.
 commands:
   cogy:
     executable: "/srv/cogcmd/cogy/commands/cogy"
